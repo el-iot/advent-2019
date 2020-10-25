@@ -22,13 +22,16 @@ class Computer:
         Run the program
         """
         self.inputs = inputs
+        outputs = []
 
         while not self.finished:
             instructions = self.read_next_instruction()
             output = self.execute(**instructions)
-            print(">> %s" % output) if output is not None else None
 
-        return output
+            if output is not None:
+                outputs.append(int(output))
+
+        return outputs
 
     def read_next_instruction(self):
         """
@@ -38,10 +41,8 @@ class Computer:
         parameters = []
         inputs = []
 
-        if (n_inputs := opcode.INPUTS) > 0:
-            assert len(self.inputs) == n_inputs
-            inputs = self.inputs
-            self.inputs = None
+        if opcode.INPUTS:
+            inputs = [self.inputs.pop(0)]
 
         for _ in range(opcode.PARAMETERS):
             parameters += [int(self.program[self.pointer])]
@@ -69,7 +70,6 @@ class Computer:
         self.pointer += 1
 
         bits = [0] * (5 - len(bits)) + bits
-
         opcode_tail = bits.pop()
         opcode_head = bits.pop()
         opcode = int(str(opcode_head) + str(opcode_tail))
@@ -77,12 +77,3 @@ class Computer:
         modes = [int(e) for e in bits][::-1]
 
         return self.opcodes.get(opcode), modes
-
-
-if __name__ == "__main__":
-
-    with open("instructions.txt", "r") as file:
-        inst = [int(x) for x in file.read().replace("\n", "").split(",")]
-
-    computer = Computer(inst)
-    computer.run_program(inputs=[5])
