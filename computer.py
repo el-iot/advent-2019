@@ -12,28 +12,23 @@ class Computer:
             program = [int(n) for n in program.replace("\n", "").split(",")]
 
         self.finished = False
-        self.inputs = None
+        self.inputs = []
         self.opcodes = OpCodes()
         self.pointer = 0
         self.program = program
 
-    def parse_opcode_at_pointer(self):
+    def run_program(self, inputs=[]):
         """
-        Parse an instruction underneath the pointer into an opcode and parameters
-        and then advance the pointer
+        Run the program
         """
-        bits = [*str(self.program[self.pointer])]
-        self.pointer += 1
+        self.inputs = inputs
 
-        bits = [0] * (5 - len(bits)) + bits
+        while not self.finished:
+            instructions = self.read_next_instruction()
+            output = self.execute(**instructions)
+            print(">> %s" % output) if output is not None else None
 
-        opcode_tail = bits.pop()
-        opcode_head = bits.pop()
-        opcode = int(str(opcode_head) + str(opcode_tail))
-
-        modes = [int(e) for e in bits][::-1]
-
-        return self.opcodes.get(opcode), modes
+        return output
 
     def read_next_instruction(self):
         """
@@ -65,18 +60,23 @@ class Computer:
         """
         return opcode.execute(self, parameters=parameters, modes=modes, inputs=inputs)
 
-    def run_program(self, inputs=[]):
+    def parse_opcode_at_pointer(self):
         """
-        Run the program
+        Parse an instruction underneath the pointer into an opcode and parameters
+        and then advance the pointer
         """
-        self.inputs = inputs
+        bits = [*str(self.program[self.pointer])]
+        self.pointer += 1
 
-        while not self.finished:
-            instructions = self.read_next_instruction()
-            output = self.execute(**instructions)
-            print(">> %s" % output) if output is not None else None
+        bits = [0] * (5 - len(bits)) + bits
 
-        return output
+        opcode_tail = bits.pop()
+        opcode_head = bits.pop()
+        opcode = int(str(opcode_head) + str(opcode_tail))
+
+        modes = [int(e) for e in bits][::-1]
+
+        return self.opcodes.get(opcode), modes
 
 
 if __name__ == "__main__":

@@ -1,4 +1,6 @@
-import re
+"""
+Codes
+"""
 
 
 class UnknownOpcodeError(Exception):
@@ -117,7 +119,8 @@ class OUTPUT(OpCode):
 class JUMPIFTRUE(OpCode):
     """
     Opcode 5 is jump-if-true:
-    if the first parameter is non-zero, it sets the instruction pointer to the value from the second parameter.
+    if the first parameter is non-zero,
+    it sets the instruction pointer to the value from the second parameter.
     Otherwise, it does nothing.
     """
 
@@ -137,7 +140,8 @@ class JUMPIFTRUE(OpCode):
 class JUMPIFFALSE(OpCode):
     """
     Opcode 6 is jump-if-false:
-    if the first parameter is zero, it sets the instruction pointer to the value from the second parameter.
+    if the first parameter is zero,
+    it sets the instruction pointer to the value from the second parameter.
     Otherwise, it does nothing.
     """
 
@@ -157,7 +161,8 @@ class JUMPIFFALSE(OpCode):
 class LESSTHAN(OpCode):
     """
     Opcode 7 is less than:
-    if the first parameter is less than the second parameter, it stores 1 in the position given by the third parameter.
+    if the first parameter is less than the second parameter,
+    it stores 1 in the position given by the third parameter.
     Otherwise, it stores 0.
     """
 
@@ -166,7 +171,6 @@ class LESSTHAN(OpCode):
     NAME = "LESS-THAN"
 
     def execute(self, computer, inputs, parameters, modes, **kwargs):
-
 
         v1 = computer.program[parameters[0]] if not modes[0] else parameters[0]
         v2 = computer.program[parameters[1]] if not modes[1] else parameters[1]
@@ -178,7 +182,8 @@ class LESSTHAN(OpCode):
 class EQUALS(OpCode):
     """
     Opcode 8 is equals:
-    if the first parameter is equal to the second parameter, it stores 1 in the position given by the third parameter.
+    if the first parameter is equal to the second parameter,
+    it stores 1 in the position given by the third parameter.
     Otherwise, it stores 0.
     """
 
