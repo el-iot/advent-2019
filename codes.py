@@ -1,21 +1,11 @@
-"""
-Codes
-"""
-
-
-class UnknownOpcodeError(Exception):
-    """
-    Raised when there is an unknown opcode
-    """
-
-    pass
+import errors
 
 
 class OpCodes:
     def __init__(self):
 
         self.lookup = {
-            op.OPCODE: op
+            op.CODE: op
             for op in [
                 SAVE,
                 ADD,
@@ -26,13 +16,14 @@ class OpCodes:
                 JUMPIFFALSE,
                 LESSTHAN,
                 EQUALS,
+                ADJUSTRBASE,
             ]
         }
 
     def get(self, value):
 
         if value not in self.lookup:
-            raise UnknownOpcodeError(value)
+            raise errors.UnknownOpcodeError(value)
 
         return self.lookup[value]()
 
@@ -42,78 +33,64 @@ class OpCode:
     INPUTS = 0
     OUTPUTS = 0
     PARAMETERS = 0
+    WRITES = 0
 
     def __repr__(self):
         return f"<<{self.NAME}>>"
 
 
-class SAVE(OpCode):
-
-    OPCODE = 3
-    INPUTS = 1
-    PARAMETERS = 1
-    NAME = "SAVE"
-
-    def execute(self, computer, inputs, parameters, modes, **kwargs):
-        """
-        Save the value of the inputs[0] to the address in parameters[0]
-        """
-        d1 = computer.program[parameters[0]] if modes[0] else parameters[0]
-        computer.program[d1] = inputs[0]
-
-
 class ADD(OpCode):
 
-    OPCODE = 1
-    PARAMETERS = 3
     NAME = "ADD"
+    CODE = 1
+    PARAMETERS = 3
+    WRITES = 1
 
-    def execute(self, computer, inputs, parameters, modes, **kwargs):
+    def execute(self, computer, inputs, v1, v2, v3):
 
-        v1 = computer.program[parameters[0]] if not modes[0] else parameters[0]
-        v2 = computer.program[parameters[1]] if not modes[1] else parameters[1]
-        computer.program[parameters[2]] = int(v1) + int(v2)
+        computer.program[v3] = int(v1) + int(v2)
 
 
 class MULTIPLY(OpCode):
 
-    OPCODE = 2
-    PARAMETERS = 3
     NAME = "MULTIPLY"
+    CODE = 2
+    PARAMETERS = 3
+    WRITES = 1
 
-    def execute(self, computer, inputs, parameters, modes, **kwargs):
+    def execute(self, computer, inputs, v1, v2, v3):
 
-        v1 = computer.program[parameters[0]] if not modes[0] else parameters[0]
-        v2 = computer.program[parameters[1]] if not modes[1] else parameters[1]
-        computer.program[parameters[2]] = int(v1) * int(v2)
+        print(v1, v2, v3)
+        computer.program[v3] = int(v1) * int(v2)
 
 
-class BREAK(OpCode):
+class SAVE(OpCode):
 
-    OPCODE = 99
-    NAME = "BREAK"
+    INPUTS = 1
+    NAME = "SAVE"
+    CODE = 3
+    PARAMETERS = 1
+    WRITES = 1
 
-    def execute(self, computer, inputs, parameters, modes, **kwargs):
+    def execute(self, computer, inputs, v1):
         """
-        Halt the program
+        Save the value of the inputs[0] to the address in parameters[0]
         """
-        computer.finished = True
+        computer.program[v1] = inputs[0]
 
 
 class OUTPUT(OpCode):
 
-    OPCODE = 4
+    NAME = "OUTPUT"
+    CODE = 4
     OUTPUTS = 1
     PARAMETERS = 1
-    NAME = "OUTPUT"
 
-    def execute(self, computer, inputs, parameters, modes, **kwargs):
+    def execute(self, computer, inputs, v1):
         """
         Output the value of the parameters[0]
         """
-        assert len(parameters) == 1
-
-        return parameters[0] if modes[0] else computer.program[parameters[0]]
+        return v1
 
 
 class JUMPIFTRUE(OpCode):
@@ -124,15 +101,11 @@ class JUMPIFTRUE(OpCode):
     Otherwise, it does nothing.
     """
 
-    OPCODE = 5
-    PARAMETERS = 2
     NAME = "JUMP-IF-TRUE"
+    CODE = 5
+    PARAMETERS = 2
 
-    def execute(self, computer, inputs, parameters, modes, **kwargs):
-
-        v1 = computer.program[parameters[0]] if not modes[0] else parameters[0]
-        v2 = computer.program[parameters[1]] if not modes[1] else parameters[1]
-
+    def execute(self, computer, inputs, v1, v2):
         if v1 != 0:
             computer.pointer = int(v2)
 
@@ -145,15 +118,11 @@ class JUMPIFFALSE(OpCode):
     Otherwise, it does nothing.
     """
 
-    OPCODE = 6
-    PARAMETERS = 2
     NAME = "JUMP-IF-FALSE"
+    CODE = 6
+    PARAMETERS = 2
 
-    def execute(self, computer, inputs, parameters, modes, **kwargs):
-
-        v1 = computer.program[parameters[0]] if not modes[0] else parameters[0]
-        v2 = computer.program[parameters[1]] if not modes[1] else parameters[1]
-
+    def execute(self, computer, inputs, v1, v2):
         if v1 == 0:
             computer.pointer = int(v2)
 
@@ -166,16 +135,12 @@ class LESSTHAN(OpCode):
     Otherwise, it stores 0.
     """
 
-    OPCODE = 7
-    PARAMETERS = 3
     NAME = "LESS-THAN"
+    CODE = 7
+    PARAMETERS = 3
+    WRITES = 1
 
-    def execute(self, computer, inputs, parameters, modes, **kwargs):
-
-        v1 = computer.program[parameters[0]] if not modes[0] else parameters[0]
-        v2 = computer.program[parameters[1]] if not modes[1] else parameters[1]
-        v3 = parameters[2] if not modes[2] else computer.program[parameters[2]]
-
+    def execute(self, computer, inputs, v1, v2, v3):
         computer.program[v3] = int(v1 < v2)
 
 
@@ -187,14 +152,38 @@ class EQUALS(OpCode):
     Otherwise, it stores 0.
     """
 
-    OPCODE = 8
-    PARAMETERS = 3
     NAME = "EQUALS"
+    CODE = 8
+    PARAMETERS = 3
+    WRITES = 1
 
-    def execute(self, computer, inputs, parameters, modes, **kwargs):
-
-        v1 = computer.program[parameters[0]] if not modes[0] else parameters[0]
-        v2 = computer.program[parameters[1]] if not modes[1] else parameters[1]
-        v3 = parameters[2] if not modes[2] else computer.program[parameters[2]]
-
+    def execute(self, computer, inputs, v1, v2, v3):
         computer.program[v3] = int(v1 == v2)
+
+
+class ADJUSTRBASE(OpCode):
+    """
+    Opcode 9 adjusts the relative base by the value of its only parameter.
+    The relative base increases (or decreases, if the value is negative)
+    by the value of the parameter.
+    """
+
+    NAME = "ADJUST-RELATIVE-BASE"
+    CODE = 9
+    PARAMETERS = 1
+    WRITES = 1
+
+    def execute(self, computer, inputs, v1):
+        computer.relative_base += v1
+
+
+class BREAK(OpCode):
+
+    NAME = "BREAK"
+    CODE = 99
+
+    def execute(self, computer, inputs):
+        """
+        Halt the program
+        """
+        computer.finished = True

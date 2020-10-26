@@ -14,7 +14,7 @@ def test_run():
     with open("tests.json", "r") as file:
         tests = json.load(file)
 
-    for name, [program, inputs, expected] in tests.items():
+    for name, [program, inputs, expected] in tests['computer'].items():
 
         computer = Computer(program)
         outputs = computer.run(inputs=inputs)

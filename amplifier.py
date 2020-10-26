@@ -19,7 +19,7 @@ def run_in_order(order, program):
     outputs = [0]
     for o in order:
         comp = Computer(program.copy())
-        outputs = comp.run_program([o] + outputs, early_stopping=True)
+        outputs = comp.run([o] + outputs, early_stopping=True)
 
     return outputs
 
