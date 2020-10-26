@@ -72,7 +72,7 @@ class ADD(OpCode):
 
         v1 = computer.program[parameters[0]] if not modes[0] else parameters[0]
         v2 = computer.program[parameters[1]] if not modes[1] else parameters[1]
-        computer.program[parameters[2]] = str(int(v1) + int(v2))
+        computer.program[parameters[2]] = int(v1) + int(v2)
 
 
 class MULTIPLY(OpCode):
@@ -85,7 +85,7 @@ class MULTIPLY(OpCode):
 
         v1 = computer.program[parameters[0]] if not modes[0] else parameters[0]
         v2 = computer.program[parameters[1]] if not modes[1] else parameters[1]
-        computer.program[parameters[2]] = str(int(v1) * int(v2))
+        computer.program[parameters[2]] = int(v1) * int(v2)
 
 
 class BREAK(OpCode):

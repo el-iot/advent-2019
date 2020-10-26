@@ -10,7 +10,6 @@ def get_program():
     url = "https://adventofcode.com/2019/day/7/input"
     with open("cookies.json", "r") as file:
         cookies = json.load(file)
-
     response = requests.get(url, cookies=cookies)
     return response.text
 
@@ -20,7 +19,7 @@ def run_in_order(order, program):
     outputs = [0]
     for o in order:
         comp = Computer(program.copy())
-        outputs = comp.run_program([o] + outputs)
+        outputs = comp.run_program([o] + outputs, early_stopping=True)
 
     return outputs
 

@@ -17,11 +17,11 @@ class Computer:
         self.pointer = 0
         self.program = program
 
-    def run_program(self, inputs=[]):
+    def run(self, inputs=[], early_stopping=False):
         """
         Run the program
         """
-        self.inputs = inputs
+        self.inputs += inputs
         outputs = []
 
         while not self.finished:
@@ -30,6 +30,8 @@ class Computer:
 
             if output is not None:
                 outputs.append(int(output))
+                if early_stopping:
+                    return outputs
 
         return outputs
 

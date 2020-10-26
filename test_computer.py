@@ -17,5 +17,5 @@ def test_run():
     for name, [program, inputs, expected] in tests.items():
 
         computer = Computer(program)
-        outputs = computer.run_program(inputs=inputs)
+        outputs = computer.run(inputs=inputs)
         assert outputs == expected, name
