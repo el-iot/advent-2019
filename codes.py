@@ -1,33 +1,6 @@
 import errors
 
 
-class OpCodes:
-    def __init__(self):
-
-        self.lookup = {
-            op.CODE: op
-            for op in [
-                SAVE,
-                ADD,
-                MULTIPLY,
-                BREAK,
-                OUTPUT,
-                JUMPIFTRUE,
-                JUMPIFFALSE,
-                LESSTHAN,
-                EQUALS,
-                ADJUSTRBASE,
-            ]
-        }
-
-    def get(self, value):
-
-        if value not in self.lookup:
-            raise errors.UnknownOpcodeError(value)
-
-        return self.lookup[value]()
-
-
 class OpCode:
 
     INPUTS = 0
@@ -59,8 +32,6 @@ class MULTIPLY(OpCode):
     WRITES = 1
 
     def execute(self, computer, inputs, v1, v2, v3):
-
-        print(v1, v2, v3)
         computer.program[v3] = int(v1) * int(v2)
 
 
@@ -171,7 +142,6 @@ class ADJUSTRBASE(OpCode):
     NAME = "ADJUST-RELATIVE-BASE"
     CODE = 9
     PARAMETERS = 1
-    WRITES = 1
 
     def execute(self, computer, inputs, v1):
         computer.relative_base += v1
@@ -187,3 +157,29 @@ class BREAK(OpCode):
         Halt the program
         """
         computer.finished = True
+
+
+class OpCodes:
+
+    LOOKUP = {
+        op.CODE: op
+        for op in [
+            SAVE,
+            ADD,
+            MULTIPLY,
+            BREAK,
+            OUTPUT,
+            JUMPIFTRUE,
+            JUMPIFFALSE,
+            LESSTHAN,
+            EQUALS,
+            ADJUSTRBASE,
+        ]
+    }
+
+    def get(self, value):
+
+        if value not in self.LOOKUP:
+            raise errors.UnknownOpcodeError(value)
+
+        return self.LOOKUP[value]()

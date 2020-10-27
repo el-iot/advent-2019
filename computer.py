@@ -7,7 +7,6 @@ class Computer:
     """
     Computer
     """
-
     def __init__(self, program, memory=2048):
 
         if isinstance(program, str):
@@ -32,13 +31,10 @@ class Computer:
         while not self.finished:
             instructions = self.read_next_instruction()
             output = self.execute(**instructions)
-
             if output is not None:
                 outputs.append(int(output))
                 if early_stopping:
                     return outputs
-                else:
-                    print('>> %s' % output)
 
         return outputs
 
@@ -68,7 +64,7 @@ class Computer:
         """
         Execute a set of instructions
         """
-        # resolve parameter-modes
+
         values = []
         for mode, parameter in zip(modes, parameters):
 
@@ -88,11 +84,7 @@ class Computer:
                 raise errors.UnknownModeError(mode)
 
         if opcode.WRITES:
-            values[-1] = (
-                parameters[-1]
-                if modes[-1] != Modes.RELATIVE
-                else self.program[parameter + self.relative_base]
-            )
+            values[-1] = parameters[-1] if not modes[len(values) - 1] else self.relative_base + parameters[-1]
 
         return opcode.execute(self, inputs, *values)
 

@@ -14,8 +14,9 @@ def test_run():
     with open("tests.json", "r") as file:
         tests = json.load(file)
 
-    for name, [program, inputs, expected] in tests['computer'].items():
+    for name, [program, inputs, expected] in tests["computer"].items():
 
+        print("\n%s" % name)
         computer = Computer(program)
         outputs = computer.run(inputs=inputs)
         assert outputs == expected, name
