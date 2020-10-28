@@ -3,7 +3,7 @@ import json
 
 import requests
 
-from computer import Computer
+from .computer import Computer
 
 
 class FeedbackLoop:

@@ -92,11 +92,9 @@ class PaintRobot(Computer):
 with open("inputs.json", "r") as file:
     program = json.load(file)["painter"]
 
-
 paint_robot = PaintRobot(program)
 inputs = [WHITE]
 runner = paint_robot.run(inputs)
-
 
 while not paint_robot.finished:
 

@@ -1,12 +1,13 @@
-import errors
-from codes import OpCodes
-from modes import Modes
+from . import errors
+from .codes import OpCodes
+from .modes import Modes
 
 
 class Computer:
     """
     Computer
     """
+
     def __init__(self, program, memory=2048):
 
         if isinstance(program, str):
@@ -84,7 +85,11 @@ class Computer:
                 raise errors.UnknownModeError(mode)
 
         if opcode.WRITES:
-            values[-1] = parameters[-1] if not modes[len(values) - 1] else self.relative_base + parameters[-1]
+            values[-1] = (
+                parameters[-1]
+                if not modes[len(values) - 1]
+                else self.relative_base + parameters[-1]
+            )
 
         return opcode.execute(self, inputs, *values)
 

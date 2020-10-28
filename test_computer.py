@@ -1,6 +1,6 @@
 import json
 
-from computer import Computer
+from computer.computer import Computer
 
 
 def test_init():
