@@ -1,7 +1,6 @@
 import json
-import re
-
 import tqdm
+import re
 
 MOON_RE = re.compile(r"^\s*<x=(.*), y=(.*), z=(.*)>")
 
@@ -16,6 +15,9 @@ class Vector:
         self.values = args
 
     def __add__(self, other):
+        """
+        Add vectors
+        """
 
         assert self.n == other.n, "vectors must have the same length (%s != %s)" % (
             self.n,
@@ -25,6 +27,9 @@ class Vector:
         return Vector(*result)
 
     def __sub__(self, other):
+        """
+        Subtract vectors
+        """
 
         assert self.n == other.n, "vectors must have the same length (%s != %s)" % (
             self.n,
@@ -34,9 +39,15 @@ class Vector:
         return Vector(*result)
 
     def __mul__(self, n):
+        """
+        Multiply vectors by a scalar
+        """
         return Vector(*[x * n for x in self.values])
 
     def to_unit(self):
+        """
+        Get the unit vector
+        """
         return Vector(*[1 if x > 0 else 0 if x == 0 else -1 for x in self.values])
 
     def __repr__(self):
@@ -63,9 +74,12 @@ class Moon:
 
     def __repr__(self):
 
+        pad = lambda s: " " * (6 - len(str(s))) + str(s)
+
         return (
-            f"<< {' | '.join(str(e) for e in self.position.values)} >> "
-            f"<< {' | '.join(str(e) for e in self.velocity.values)} >>"
+            f"pos ({', '.join(pad(e) for e in self.position.values)}) "
+            f"vel ({', '.join(pad(e) for e in self.velocity.values)}) "
+            f"en  ({', '.join(pad(e) for e in [self.kinetic_energy(), self.potential_energy(), self.energy()])})"
         )
 
 
@@ -140,46 +154,28 @@ class Planet:
 
 if __name__ == "__main__":
 
-    inputs = """pos=<x= -1, y=  0, z=  2>, vel=<x=  0, y=  0, z=  0>
-    pos=<x=  2, y=-10, z= -7>, vel=<x=  0, y=  0, z=  0>
-    pos=<x=  4, y= -8, z=  8>, vel=<x=  0, y=  0, z=  0>
-    pos=<x=  3, y=  5, z= -1>, vel=<x=  0, y=  0, z=  0>"""
+    inputs = """<x=-4, y=-9, z=-3>
+    <x=-13, y=-11, z=0>
+    <x=-17, y=-7, z=15>
+    <x=-16, y=4, z=2>"""
 
     jupyter = Planet.from_string(inputs)
+    points = {key: {"x": [], "y": [], "z": []} for key in range(4)}
+    velocities = {key: {"x": [], "y": [], "z": []} for key in range(4)}
+    EPOCHS = 1000000
 
-    kinetic_energies = []
-    potential_energies = []
-    energies = []
-    moon_energies = [
-        {
-            "kinetic": [],
-            "potential": [],
-            "total": [],
-        }
-        for _ in range(len(jupyter.moons))
-    ]
-
-    for n in tqdm.tqdm(range(2772 * 4)):
-
-        kinetic_energies.append(jupyter.kinetic_energy())
-        potential_energies.append(jupyter.potential_energy())
-        energies.append(jupyter.energy())
-
-        for idx, moon in enumerate(jupyter.moons):
-
-            moon_energies[idx]["kinetic"].append(moon.kinetic_energy())
-            moon_energies[idx]["potential"].append(moon.potential_energy())
-            moon_energies[idx]["total"].append(moon.energy())
-
+    for step in tqdm.tqdm(range(EPOCHS)):
         jupyter.step()
+        for idx, moon in enumerate(jupyter.moons):
+            [x, y, z] = moon.position.values
+            points[idx]["x"].append(x)
+            points[idx]["y"].append(y)
+            points[idx]["z"].append(z)
 
-    with open("energy.json", "w") as file:
-        json.dump(
-            {
-                "kinetic": kinetic_energies,
-                "potential": potential_energies,
-                "total": energies,
-                "moons": moon_energies,
-            },
-            file,
-        )
+            [x, y, z] = moon.velocity.values
+            velocities[idx]["x"].append(x)
+            velocities[idx]["y"].append(y)
+            velocities[idx]["z"].append(z)
+
+    with open("orbit_data.json", "w") as file:
+        json.dump({"points": points, "velocities": velocities}, file)
