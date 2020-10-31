@@ -1,8 +1,8 @@
 import itertools
 import json
 
-from computer.computer import Computer
-from computer.feedback import FeedbackLoop
+from computer import Computer
+from feedback import FeedbackLoop
 
 
 def get_program():

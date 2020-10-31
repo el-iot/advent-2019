@@ -1,6 +1,6 @@
 import json
 
-import moon.moon
+import moon
 
 def test_moon():
 
@@ -16,7 +16,7 @@ def test_moon():
             1940,
         ),
     ]:
-        planet = moon.moon.Planet.from_string(config)
+        planet = moon.Planet.from_string(config)
         for _ in range(step):
             planet.step()
         assert planet.energy() == expected
