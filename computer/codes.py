@@ -1,4 +1,4 @@
-from . import errors
+import errors
 
 
 class OpCode:

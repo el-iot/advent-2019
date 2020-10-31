@@ -1,6 +1,6 @@
-from . import errors
-from .codes import OpCodes
-from .modes import Modes
+import errors
+from codes import OpCodes
+from modes import Modes
 
 
 class Computer:
