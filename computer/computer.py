@@ -27,17 +27,18 @@ class Computer:
         Run the program
         """
         self.inputs += inputs
-        outputs = []
 
         while not self.finished:
             instructions = self.read_next_instruction()
             output = self.execute(**instructions)
             if output is not None:
-                outputs.append(int(output))
-                if early_stopping:
-                    return outputs
+                self.process_outputs(output)
 
-        return outputs
+    def process_outputs(output):
+        """
+        Process outputs
+        """
+        print(" >> %s" % output)
 
     def read_next_instruction(self):
         """
@@ -48,7 +49,7 @@ class Computer:
         inputs = []
 
         if opcode.INPUTS:
-            inputs = [self.inputs.pop(0)]
+            inputs = self.get_inputs()
 
         for _ in range(opcode.PARAMETERS):
             parameters += [int(self.program[self.pointer])]
@@ -60,6 +61,12 @@ class Computer:
             "modes": modes,
             "inputs": inputs,
         }
+
+    def get_inputs(self):
+        """
+        Get the inputs
+        """
+        return [self.inputs.pop(0)]
 
     def execute(self, opcode, parameters, modes, inputs):
         """
