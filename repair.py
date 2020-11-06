@@ -1,8 +1,9 @@
 import json
+from time import sleep
 
 from computer import Computer
 
-HEIGHT = 50
+HEIGHT = 45
 WIDTH = 50
 
 
@@ -143,6 +144,7 @@ class RepairDroid(Computer):
             )
         )
         print()
+        sleep(0.1)
 
     def run(self):
         """

@@ -34,7 +34,15 @@ class Computer:
             if output is not None:
                 self.process_outputs(output)
 
-    def process_outputs(output):
+        self.post_process()
+
+    def post_process(self):
+        """
+        Runs when the program finishes
+        """
+        pass
+
+    def process_outputs(self, output):
         """
         Process outputs
         """

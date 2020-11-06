@@ -85,7 +85,6 @@ class PaintRobot(Computer):
         return outputs
 
     def render_grid(self):
-
         print("\n".join("".join(" " if e else "■" for e in row) for row in self.grid))
 
 
