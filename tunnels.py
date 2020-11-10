@@ -6,7 +6,7 @@ class Tiles:
     WALL = "#"
     KEYS = "abcdefghijklmnopqrstuvwxyz"
     DOORS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    PLAYER = "@"
+    PLAYER = "@1234"
 
 
 class Solution:
@@ -19,8 +19,24 @@ class Solution:
         self.height = len(self.grid)
         self.width = len(self.grid[0])
 
-        self.starting_coordinates = self._find_player()
+        # replace the existing pattern with a new one
+        (x, y) = self._find_player()
+        x -= 1
+        y -= 1
+        replacement_pattern = ["1#2", "###", "3#4"]
+
+        self.robots = []
+
+        for i in range(3):
+            for j in range(3):
+                self.grid[y + i][x + j] = replacement_pattern[j][i]
+                if self.grid[y + i][x + j] in Tiles.PLAYER:
+                    self.robots.append((x + j, y + i))
+
+        self.render_grid()
+
         self.key_requirements = self.get_key_requirements()
+        print(self.key_requirements)
         self.key_distances = self.get_key_distances()
         self.key_locations = {
             self.grid[y][x]: (x, y)
@@ -30,8 +46,6 @@ class Solution:
         }
 
         self.all_keys = [i for j in self.grid for i in j if i in Tiles.KEYS]
-
-        self.render_grid()
 
     def render_grid(self):
         print("\n".join(["".join(str(key) for key in row) for row in self.grid]) + "\n")
@@ -131,7 +145,7 @@ class Solution:
         Get the key-requirements
         """
         requirements = collections.defaultdict(list)
-        queue = [(*self.starting_coordinates, [])]
+        queue = [([], [])]
         seen = {*()}
 
         while queue:
@@ -210,9 +224,9 @@ if __name__ == "__main__":
 
     url = "https://adventofcode.com/2019/day/18/input"
     cookies = {
-        "session": "53616c7465645f5f8dd5ab6cc0437ff5bc9ab097b3c098ca1f39fb037f87f7fb55feea5b92f65b11b1ba3842526a2cd7"
+       "session": "53616c7465645f5f8dd5ab6cc0437ff5bc9ab097b3c098ca1f39fb037f87f7fb55feea5b92f65b11b1ba3842526a2cd7"
     }
-    response = requests.get(url, cookies=cookies)
-    solution = Solution(response.text)
+    puzzle_input = requests.get(url, cookies=cookies).text
+    solution = Solution(puzzle_input)
     paths = solution.traverse()
     print(paths[-1])

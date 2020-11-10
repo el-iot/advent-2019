@@ -34,7 +34,7 @@ class Computer:
             if output is not None:
                 self.process_outputs(output)
 
-        self.post_process()
+        return self.post_process()
 
     def post_process(self):
         """
